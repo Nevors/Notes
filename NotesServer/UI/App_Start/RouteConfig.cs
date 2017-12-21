@@ -10,12 +10,14 @@ namespace UI {
         public static void RegisterRoutes(RouteCollection routes) {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            /*routes.MapRoute(
-                name: "Default",
+            routes.MapRoute(
+                name: "Api",
                 url: "api/{controller}/{action}/{id}",
                 defaults: new { id = UrlParameter.Optional }
-            );*/
-            routes.MapMvcAttributeRoutes();
+            );
+
+            //конфликтует регистрацией роутов WEB API
+            //routes.MapMvcAttributeRoutes();
 
             routes.MapRoute(
                 name: "Default",
