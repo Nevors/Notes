@@ -5,7 +5,7 @@ import 'jstree';
 
 export default class ReactTree extends React.Component {
     componentDidMount() {
-        $(ReactDOM.findDOMNode(this))
+        this.tree = $(ReactDOM.findDOMNode(this))
             .on('changed.jstree', (e, data) => {
                 if (this.props.onChanged) {
                     this.props.onChanged(data.selected.map(
@@ -19,7 +19,14 @@ export default class ReactTree extends React.Component {
             })
             .jstree({
                 core: this.props.core
-            });
+            })
+            .jstree();
+            
+        this.refresh = this.refresh.bind(this);
+    }
+
+    refresh(){
+        this.tree.refresh();
     }
 
     render() {
