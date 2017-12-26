@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Mvc = System.Web.Mvc;
 using UI.Models;
 
 namespace UI.Controllers {
