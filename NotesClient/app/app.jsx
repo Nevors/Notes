@@ -10,9 +10,10 @@ ReactDOM.render(
     <Router>
         <Switch>
             <Route exact path="/" component={App} />
-            <Route path="/login" component={Login} />
+
             <Route component={App} />
         </Switch>
     </Router>,
     document.getElementById('app')
 );
+//import UserStore from "../stores/UsersStore.jsx"

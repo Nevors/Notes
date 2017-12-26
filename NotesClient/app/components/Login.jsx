@@ -24,9 +24,6 @@ export default class Login extends Reflux.Component {
     }
 
     render() {
-        if (this.state.isAuth) {
-            return (<Redirect to="/" />);
-        }
         return (
             <div>
                 <div hidden={this.state.hiddenMessageError}>Логин или пароль неверны</div>

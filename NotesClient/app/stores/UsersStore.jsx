@@ -16,13 +16,20 @@ class UsersStore extends Reflux.Store {
     onLogIn(login, password) {
         $.ajax({
             url: URL_GET_TOKEN,
-            type:"POST",
+            type: "POST",
             data: "grant_type=password&username=" + login + "&password=" + password,
             success: function (data, textStatus, jqXHR) {
                 this.token = data.token_type + " ";
                 this.token += data.access_token;
                 this.setState({ isAuth: true });
                 UsersActions.LogIn.completed(/*data, textStatus, jqXHR*/);
+
+                $.ajaxSetup({
+                    headers: { 
+                        "Authorization": this.token
+                    },
+                });
+
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
                 UsersActions.LogIn.failed(jqXHR, textStatus, errorThrown)
@@ -35,12 +42,16 @@ class UsersStore extends Reflux.Store {
         this.setState({ isAuth: false });
         this.token = "";
         UsersActions.LogOut.completed();
+
+        $.ajaxSetup({
+            headers: { },
+        });
     }
 
     onRegister(login, password) {
         $.ajax({
             url: URL_API_REGISTER,
-            type:"POST",
+            type: "POST",
             data: {
                 Email: login,
                 Password: password,
