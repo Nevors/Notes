@@ -75,9 +75,8 @@ class NotesStore extends Reflux.Store {
 
     Delete(id) {
         $.ajax({
-            url: URL_API_NOTES_DELETE,
+            url: URL_API_NOTES_DELETE + "/" + id,
             type: "POST",
-            data: { id: id },
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Delete.completed(data, textStatus, jqXHR);
             }.bind(this),

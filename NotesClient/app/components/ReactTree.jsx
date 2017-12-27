@@ -12,7 +12,9 @@ export default class ReactTree extends React.Component {
             .on('changed.jstree', (e, data) => {
                 if (this.props.onChanged) {
                     this.props.onChanged(data.selected.map(
-                        item => data.instance.get_node(item)
+                        item => {
+                            return data.instance.get_node(item)
+                        }
                     ));
                 }
             })
@@ -24,12 +26,17 @@ export default class ReactTree extends React.Component {
                 core: this.props.core
             })
             .jstree();
-            
+
+        this.tree.hide_icons();
         this.refresh = this.refresh.bind(this);
     }
 
-    refresh(){
+    refresh() {
         this.tree.refresh();
+    }
+
+    getJsTree(){
+        return this.tree;
     }
 
     render() {
