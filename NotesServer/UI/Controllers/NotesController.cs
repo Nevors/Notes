@@ -51,7 +51,7 @@ namespace UI.Controllers {
             bool isCreator = noteDb.CreatorId.Equals(userId);
 
             if (isCreator || IsAccess(note, userId, Access.ReadWrite)) {
-                note.Text = noteDb.Text;
+                noteDb.Text = note.Text;
             }
 
             if (isCreator) {
@@ -78,7 +78,7 @@ namespace UI.Controllers {
         [Route("Delete/{id}")]
         public IHttpActionResult PostDelete(int id) {
             string userId = User.Identity.GetUserId();
-            var note = db.Notes.FirstOrDefault(n => n.CreatorId.Equals(userId));
+            var note = db.Notes.FirstOrDefault(n => n.Id==id && n.CreatorId.Equals(userId));
             if (note == null) {
                 return NotFound();
             }
