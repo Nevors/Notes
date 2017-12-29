@@ -9,6 +9,10 @@ namespace Domain.Entity {
     public class Note {
         public int Id { get; set; }
         [Required]
+        [StringLength(255)]
+        public string Title { get; set; }
+
+        [Required]
         public string Text { get; set; }
 
         public int? ParentId { get; set; }

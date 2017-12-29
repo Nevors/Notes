@@ -15,11 +15,21 @@ namespace UI.Controllers {
     public class NotesController : ApiController {
         ApplicationDbContext db = ApplicationDbContext.Create();
 
+        [Route("ListEx")]
+        public IHttpActionResult GetListEx() {
+            string userId = User.Identity.GetUserId();
+            var list = db.AccessCards
+                .Include(ac => ac.Note)
+                .Where(ac => ac.UserId == userId)
+                .Select(ac => ac.Note);
+            return Json(list);
+        }
+
         [Route("List/{parentId}")]
         public IHttpActionResult GetList(int? parentId) {
             if (parentId == 0) parentId = null;
             string userId = User.Identity.GetUserId();
-            var list = GetNotes(parentId)//.Where(n => n.CreatorId.Equals(userId))
+            var list = GetNotes(parentId).Where(n => n.CreatorId.Equals(userId))
                 .ToList()
                 .Select(n => GetFormatNote(n));
             return Json(list);
@@ -52,6 +62,7 @@ namespace UI.Controllers {
 
             if (isCreator || IsAccess(note, userId, Access.ReadWrite)) {
                 noteDb.Text = note.Text;
+                noteDb.Title = note.Title;
             }
 
             if (isCreator) {
@@ -78,7 +89,7 @@ namespace UI.Controllers {
         [Route("Delete/{id}")]
         public IHttpActionResult PostDelete(int id) {
             string userId = User.Identity.GetUserId();
-            var note = db.Notes.FirstOrDefault(n => n.Id==id && n.CreatorId.Equals(userId));
+            var note = db.Notes.FirstOrDefault(n => n.Id == id && n.CreatorId.Equals(userId));
             if (note == null) {
                 return NotFound();
             }
@@ -123,6 +134,7 @@ namespace UI.Controllers {
             return new {
                 Id = note.Id,
                 ParentId = note.ParentId,
+                Title = note.Title,
                 Text = note.Text,
                 IsHaveChildren = IsHaveChildren(note.Id)
             };
