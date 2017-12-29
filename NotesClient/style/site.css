@@ -1,0 +1,8 @@
+.row-flex {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.max-height{
+    height: 100%;
+}

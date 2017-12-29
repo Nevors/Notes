@@ -34,7 +34,9 @@ export default class ManagerNote extends React.Component {
             if (this.state.state == STATES.View) {
                 return (
                     <div>
-                        <input type="button" value="Редактировать" onClick={this.onClickEdit} />
+                        <button className="btn btn-default" onClick={this.onClickEdit}>
+                            Редактировать
+                        </button>
                         <NoteInfo note={this.props.note} />
                     </div>
                 );

@@ -21,8 +21,6 @@ class UsersStore extends Reflux.Store {
             success: function (data, textStatus, jqXHR) {
                 this.token = data.token_type + " ";
                 this.token += data.access_token;
-                this.setState({ isAuth: true });
-                UsersActions.LogIn.completed(/*data, textStatus, jqXHR*/);
 
                 $.ajaxSetup({
                     headers: { 
@@ -30,6 +28,8 @@ class UsersStore extends Reflux.Store {
                     },
                 });
 
+                this.setState({ isAuth: true });
+                UsersActions.LogIn.completed(/*data, textStatus, jqXHR*/);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
                 UsersActions.LogIn.failed(jqXHR, textStatus, errorThrown)
@@ -39,13 +39,13 @@ class UsersStore extends Reflux.Store {
     }
 
     onLogOut() {
-        this.setState({ isAuth: false });
-        this.token = "";
-        UsersActions.LogOut.completed();
-
         $.ajaxSetup({
             headers: { },
         });
+
+        this.setState({ isAuth: false });
+        this.token = "";
+        UsersActions.LogOut.completed();
     }
 
     onRegister(login, password) {

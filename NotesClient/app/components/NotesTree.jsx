@@ -10,43 +10,36 @@ export default class NotesTree extends Reflux.Component {
     constructor(props) {
         super(props)
 
+        this.failed = this.failed.bind(this);
+        this.sendData = this.sendData.bind(this);
+        this.refresh = this.refresh.bind(this);
+
         var core = {
             data: function (obj, cb) {
                 //console.log(obj);
                 var id = obj.parent == null ? 0 : obj.original.id;
 
-                var r = NotesActions.GetChildren.completed.listen(
-                    (data) => {
-                        console.log(data);
-                        if (data[0].ParentId == id || data[0].ParentId == null) {
-                            this.completed(data, cb);
-                            r();
-                        }
-                    }
-                );
+                var completed = (data) => {
+                    console.log(data);
+                    this.sendData(data, cb);
+                };
 
-                NotesActions.GetChildren(id);
+                NotesActions.GetChildren(id, completed, this.failed);
             }.bind(this)
         };
 
         this.state = { core: core, hiddenMessageError: true }
-        this.failed = this.failed.bind(this);
-        this.completed = this.completed.bind(this);
-        this.refresh = this.refresh.bind(this);
-
-        NotesActions.GetChildren.failed.listen(this.failed);
-        NotesActions.GetChildren.completed.listen(this.failed);
 
         NotesActions.Create.completed.listen(this.refresh);
         NotesActions.Edit.completed.listen(this.refresh);
         NotesActions.Delete.completed.listen(this.refresh);
     }
 
-    completed(data, callBack) {
+    sendData(data, callBack) {
         var arr = data.map((n) => {
             return {
                 id: n.Id,
-                text: n.Text,
+                text: n.Title,
                 state: {
                     loaded: !n.IsHaveChildren
                 }
@@ -65,7 +58,7 @@ export default class NotesTree extends Reflux.Component {
         return this.refs.reactTree;
     }
 
-    refresh(data){
+    refresh(data) {
         this.refs.reactTree.refresh();
     }
 

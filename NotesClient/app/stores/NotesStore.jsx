@@ -18,70 +18,80 @@ class NotesStore extends Reflux.Store {
         this.listenToMany(NotesActions);
     }
 
-    Get(id) {
+    Get(id,completed,failed) {
         $.ajax({
             url: URL_API_NOTES_GET + "/" + id,
             type: "GET",
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Get.completed(data, textStatus, jqXHR);
+                completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
                 NotesActions.Get.failed(jqXHR, textStatus, errorThrown)
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
 
-    GetChildren(id) {
+    GetChildren(id,completed,failed) {
         console.log(id);
         $.ajax({
             url: URL_API_NOTES_GET_CHILDREN + "/" + id,
             type: "GET",
             success: function (data, textStatus, jqXHR) {
                 NotesActions.GetChildren.completed(data, textStatus, jqXHR);
+                completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                NotesActions.GetChildren.failed(jqXHR, textStatus, errorThrown)
+                NotesActions.GetChildren.failed(zjqXHR, textStatus, errorThrown);
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
 
-    Create(data) {
+    Create(data,completed,failed) {
         $.ajax({
             url: URL_API_NOTES_CREATE,
             type: "POST",
             data: data,
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Create.completed(data, textStatus, jqXHR);
+                completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                NotesActions.Create.failed(jqXHR, textStatus, errorThrown)
+                NotesActions.Create.failed(jqXHR, textStatus, errorThrown);
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
 
-    Edit(data) {
+    Edit(data,completed,failed) {
         $.ajax({
             url: URL_API_NOTES_EDIT,
             type: "POST",
             data: data,
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Edit.completed(data, textStatus, jqXHR);
+                completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                NotesActions.Edit.failed(jqXHR, textStatus, errorThrown)
+                NotesActions.Edit.failed(jqXHR, textStatus, errorThrown);
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
 
-    Delete(id) {
+    Delete(id,completed,failed) {
         $.ajax({
             url: URL_API_NOTES_DELETE + "/" + id,
             type: "POST",
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Delete.completed(data, textStatus, jqXHR);
+                completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                NotesActions.Delete.failed(jqXHR, textStatus, errorThrown)
+                NotesActions.Delete.failed(jqXHR, textStatus, errorThrown);
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
