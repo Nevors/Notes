@@ -15,24 +15,31 @@ export default class NotesTree extends Reflux.Component {
         this.refresh = this.refresh.bind(this);
 
         var core = {
+            multiple : false,
             data: function (obj, cb) {
                 //console.log(obj);
                 var id = obj.parent == null ? 0 : obj.original.id;
 
                 var completed = (data) => {
-                    console.log(data);
                     this.sendData(data, cb);
                 };
 
                 NotesActions.GetChildren(id, completed, this.failed);
-            }.bind(this)
+            }.bind(this),
+            check_callback: function (operation, node, node_parent, node_position, more) {
+                console.log("NotesTree", operation, node, node_parent, node_position, more);
+                if (operation === "delete_node") return true;
+                if (operation === "rename_node") return true;
+                if (operation === "create_node") return true;
+                return false;
+            }
         };
 
         this.state = { core: core, hiddenMessageError: true }
 
-        NotesActions.Create.completed.listen(this.refresh);
+        /*NotesActions.Create.completed.listen(this.refresh);
         NotesActions.Edit.completed.listen(this.refresh);
-        NotesActions.Delete.completed.listen(this.refresh);
+        NotesActions.Delete.completed.listen(this.refresh);*/
     }
 
     sendData(data, callBack) {
@@ -45,6 +52,7 @@ export default class NotesTree extends Reflux.Component {
                 }
             };
         });
+        //console.log("NotesTree sendData", arr);
         callBack.call(this, arr);
 
         this.setState({ hiddenMessageError: true });

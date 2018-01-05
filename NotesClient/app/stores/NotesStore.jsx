@@ -34,7 +34,6 @@ class NotesStore extends Reflux.Store {
     }
 
     GetChildren(id,completed,failed) {
-        console.log(id);
         $.ajax({
             url: URL_API_NOTES_GET_CHILDREN + "/" + id,
             type: "GET",
@@ -66,6 +65,7 @@ class NotesStore extends Reflux.Store {
     }
 
     Edit(data,completed,failed) {
+        //console.log("NotesStore Edit",data,completed,failed);
         $.ajax({
             url: URL_API_NOTES_EDIT,
             type: "POST",

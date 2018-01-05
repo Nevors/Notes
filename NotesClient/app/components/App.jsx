@@ -7,7 +7,8 @@ import NotesStore from "../stores/NotesStore.jsx";
 
 import { NotesActions } from "../Actions.jsx";
 
-import Notes from "./Notes.jsx";
+import ManagerNote from "./ManagerNote.jsx";
+import { STATES } from "./ManagerNote.jsx";
 import Login from "./Login.jsx";
 import NotesTree from "./NotesTree.jsx";
 
@@ -17,11 +18,13 @@ export default class App extends Reflux.Component {
         super(props);
         this.stores = [UserStore];
 
-        this.state = { selectNotes: [] };
+        this.state = { note: null, startStateManager: null };
 
+        this.newNote = this.newNote.bind(this);
         this.onGetNote = this.onGetNote.bind(this);
         this.onClickNew = this.onClickNew.bind(this);
-        this.onChangedNote = this.onChangedNote.bind(this);
+        this.onDeleteNote = this.onDeleteNote.bind(this);
+        this.onSaveNote = this.onSaveNote.bind(this);
         this.onClickRefresh = this.onClickRefresh.bind(this);
         this.onClickNewRoot = this.onClickNewRoot.bind(this);
         this.onChangedSelectNote = this.onChangedSelectNote.bind(this);
@@ -30,33 +33,65 @@ export default class App extends Reflux.Component {
     }
 
     onChangedSelectNote(data) {
-        this.setState({ selectNotes: [] });
-        for (var note of data) {
+        if (data.length > 0) {
+            const note = data[0];
+            var tree = this.refs.treeNotes.getTree().getJsTree();
             this.lastSelectNote = note.original;
             NotesActions.Get(note.original.id, this.onGetNote);
         }
     }
 
-    onChangedNote(note) {
-        console.log(note);
-        // this.refs.tree.getTree().tree.refresh_node(note.ParentId);
-        //this.refs.tree.getTree().refresh();
+    onDeleteNote() {
+        console.log("App onDeleteNote", this.state.note);
+        this.refs.treeNotes.getTree().getJsTree().delete_node(this.state.note.Id);
     }
 
-    onGetNote(item) {
-        this.state.selectNotes.push(item);
-        this.forceUpdate();
+    onSaveNote(note) {
+        console.log("App onSaveNote", note, this.state.note);
+        var tree = this.refs.treeNotes.getTree().getJsTree();
+        if (!note) {
+            var note = this.state.note;
+            tree.rename_node(note.Id, note.Title);
+            return;
+        }
+
+        var parentNode = tree.get_node(note.ParentId);
+
+        if (parentNode) {
+            tree.deselect_node(parentNode);
+        } else {
+            parentNode = null;
+        }
+
+        if (!parentNode || parentNode.state.loaded) {
+            console.log("App onSaveNote", parentNode);
+            tree.create_node(parentNode, { id: note.Id, text: note.Title });
+            tree.select_node(note.Id);
+        }
+
+        this.setState({ note: note, startStateManager: STATES.View });
+    }
+
+    onGetNote(note) {
+        console.log("App onGetNote", note);
+        this.setState({ note: note, startStateManager: STATES.View });
     }
 
     onClickNew() {
-        this.setState({ selectNotes: [{ id: 0, Text: "", ParentId: this.lastSelectNote.id }] })
+        this.newNote(this.lastSelectNote.id);
     }
 
     onClickRefresh() {
-        this.refs.tree.getTree().refresh();
+        this.lastSelectNote = {};
+        this.refs.treeNotes.getTree().refresh();
     }
+
     onClickNewRoot() {
-        this.setState({ selectNotes: [{ id: 0, Text: "", ParentId: 0 }] });
+        this.newNote();
+    }
+
+    newNote(parentId) {
+        this.setState({ note: { Id: 0, Title: "", Text: "", ParentId: parentId }, startStateManager: STATES.Save });
     }
 
     render() {
@@ -80,12 +115,17 @@ export default class App extends Reflux.Component {
                         </div>
                         <div className="row">
                             <div className="col-sm-12">
-                                <NotesTree ref="tree" onChanged={this.onChangedSelectNote} />
+                                <NotesTree ref="treeNotes" onChanged={this.onChangedSelectNote} />
                             </div>
                         </div>
                     </div>
                     <div className="col-sm-7 col-xs-12 panel">
-                        <Notes notes={this.state.selectNotes} />
+                        <ManagerNote
+                            note={this.state.note}
+                            startState={this.state.startStateManager}
+                            onSaveNote={this.onSaveNote}
+                            onDeleteNote={this.onDeleteNote}
+                        />
                     </div>
                 </div>
             </div>

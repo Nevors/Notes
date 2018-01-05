@@ -19,7 +19,7 @@ export default class ReactTree extends React.Component {
                 }
             })
             .on('close_node.jstree', (e, data) => {
-                console.log(data);
+                //console.log(data);
                 data.node.state.loaded = false;
             })
             .jstree({

@@ -9,14 +9,15 @@ export default class NoteInfo extends React.Component {
         if (!this.props.note) {
             return (<div>Укажите заметку</div>);
         }
-
-        var html = markdown.toHTML(this.props.note.Text);
-
+        var text = this.props.note.Text;
+        var html = "Заметка пустая";
+        if(text){
+            html = markdown.toHTML(text);
+        }
+        
         return (
-            <div>
-                <div>Заголовок</div>
-                <div>{this.props.note.Title}</div>
-                <div>Содержимое</div>
+            <div className="container-fluid">
+                <h1>{this.props.note.Title}</h1>
                 <div dangerouslySetInnerHTML={{__html: html}} ></div>
             </div>
         );

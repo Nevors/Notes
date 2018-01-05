@@ -29,7 +29,8 @@ namespace UI.Controllers {
         public IHttpActionResult GetList(int? parentId) {
             if (parentId == 0) parentId = null;
             string userId = User.Identity.GetUserId();
-            var list = GetNotes(parentId).Where(n => n.CreatorId.Equals(userId))
+            var list = GetNotes(parentId)
+                .Where(n => n.CreatorId.Equals(userId))
                 .ToList()
                 .Select(n => GetFormatNote(n));
             return Json(list);
@@ -83,7 +84,7 @@ namespace UI.Controllers {
 
             Note res = db.Notes.Add(note);
             db.SaveChanges();
-            return CreatedAtRoute("GetNote", new { id = res.Id }, res);
+            return CreatedAtRoute("GetNote", new { id = res.Id }, GetFormatNote(res));
         }
 
         [Route("Delete/{id}")]
