@@ -6,14 +6,14 @@ import { URL_GET_TOKEN, URL_API_REGISTER } from "../const.js"
 class UsersStore extends Reflux.Store {
     constructor() {
         super();
-        this.state = { isAuth: false };
+        this.state = { isAuth: false, login: "" };
         this.token = "";
         this.listenTo(UsersActions.LogIn, this.onLogIn);
         this.listenTo(UsersActions.LogOut, this.onLogOut);
         this.listenTo(UsersActions.Register, this.onRegister);
     }
 
-    onLogIn(login, password) {
+    onLogIn(login, password, completed, failed) {
         $.ajax({
             url: URL_GET_TOKEN,
             type: "POST",
@@ -23,32 +23,32 @@ class UsersStore extends Reflux.Store {
                 this.token += data.access_token;
 
                 $.ajaxSetup({
-                    headers: { 
+                    headers: {
                         "Authorization": this.token
                     },
                 });
-
-                this.setState({ isAuth: true });
+                this.setState({ isAuth: true, login: login });
                 UsersActions.LogIn.completed(/*data, textStatus, jqXHR*/);
+                completed();
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
                 UsersActions.LogIn.failed(jqXHR, textStatus, errorThrown)
-                this.setState({ isAuth: false });
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }
 
     onLogOut() {
         $.ajaxSetup({
-            headers: { },
+            headers: {},
         });
 
-        this.setState({ isAuth: false });
+        this.setState({ isAuth: false, login: "" });
         this.token = "";
         UsersActions.LogOut.completed();
     }
 
-    onRegister(login, password) {
+    onRegister(login, password, completed, failed) {
         $.ajax({
             url: URL_API_REGISTER,
             type: "POST",
@@ -59,11 +59,12 @@ class UsersStore extends Reflux.Store {
             },
             success: function (data, textStatus, jqXHR) {
                 UsersActions.Register.completed(/*data, textStatus, jqXHR*/);
+                completed();
                 onLogIn(login, password);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                this.setState({ isAuth: false });
-                UsersActions.LogIn.failed(jqXHR, textStatus, errorThrown)
+                UsersActions.LogIn.failed(jqXHR, textStatus, errorThrown);
+                failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
     }

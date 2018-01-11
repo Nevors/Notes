@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { markdown } from 'markdown';
+
+import { Grid } from 'react-bootstrap';
 export default class NoteInfo extends React.Component {
     constructor(props) {
         super(props)
@@ -16,10 +18,10 @@ export default class NoteInfo extends React.Component {
         }
         
         return (
-            <div className="container-fluid">
+            <Grid fluid={true}>
                 <h1>{this.props.note.Title}</h1>
                 <div dangerouslySetInnerHTML={{__html: html}} ></div>
-            </div>
+            </Grid>
         );
     }
 }

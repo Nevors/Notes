@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { NotesActions } from "../Actions.jsx"
+import { NotesActions } from "../Actions.jsx";
+import { Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
 
 export default class NoteSave extends React.Component {
     constructor(props) {
@@ -9,27 +10,26 @@ export default class NoteSave extends React.Component {
         this.onClickSave = this.onClickSave.bind(this);
         this.onClickDelete = this.onClickDelete.bind(this);
         this.onClickCancel = this.onClickCancel.bind(this);
+        this.onChangeTitle = this.onChangeTitle.bind(this);
+        this.onChangeText = this.onChangeText.bind(this);
+
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onFailed = this.onFailed.bind(this);
 
-        this.state = { hiddenMessageError: true, isNotExist: this.isNoteExist(props.note) }
+        this.state = { isError: false, isExist: this.isExist(props.note) }
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Notesave componentWillReceiveProps",nextProps);
-        this.refs.text.value = nextProps.note.Text;
-        this.refs.title.value = nextProps.note.Title;
-        this.state.isNotExist= this.isNoteExist(nextProps.note);
+        console.log("Notesave componentWillReceiveProps", nextProps);
+        this.state.isExist = this.isExist(nextProps.note);
     }
 
-    isNoteExist(note) {
-        return note.Id == 0;
+    isExist(note) {
+        return note.Id != 0;
     }
 
     onClickSave() {
-        this.props.note.Text = this.refs.text.value;
-        this.props.note.Title = this.refs.title.value;
         if (this.props.note.Id == 0) {
             NotesActions.Create(this.props.note, this.onSave, this.onFailed);
         } else {
@@ -43,29 +43,38 @@ export default class NoteSave extends React.Component {
 
     onClickCancel() {
         console.log("Notesave onClickCancel");
-        if(this.props.onCancel){
+        if (this.props.onCancel) {
             this.props.onCancel();
         }
     }
 
-    onSave(note){
-        console.log("Notesave onSave",note);
-        this.setState({ hiddenMessageError: true });
-        if(this.props.onSave){
+    onSave(note) {
+        console.log("Notesave onSave", note);
+        this.setState({ isError: false });
+        if (this.props.onSave) {
             this.props.onSave(note);
         }
     }
 
-    onDelete(){
-        this.setState({ hiddenMessageError: true });
-        if(this.props.onDelete){
+    onDelete() {
+        this.setState({ isError: false });
+        if (this.props.onDelete) {
             this.props.onDelete();
         }
     }
 
     onFailed() {
         console.log("FAIL");
-        this.setState({ hiddenMessageError: false });
+        this.setState({ isError: true });
+    }
+
+    onChangeTitle(e) {
+        this.props.note.Title = e.target.value;
+        this.forceUpdate();
+    }
+    onChangeText(e) {
+        this.props.note.Text = e.target.value;
+        this.forceUpdate();
     }
 
     render() {
@@ -75,24 +84,33 @@ export default class NoteSave extends React.Component {
         }
         return (
             <div>
-                <div>
-                    <button className="btn btn-default" onClick={this.onClickSave}>
+                {this.state.isError && <Alert bsStyle="warning">Ошибка</Alert>}
+                <ButtonGroup>
+                    <Button bsStyle="default" onClick={this.onClickSave}>
                         Сохранить
-                    </button>
-                    <span hidden={this.state.isNotExist}>
-                        <button className="btn btn-default" onClick={this.onClickDelete}>
-                            Удалить
-                        </button>
-                        <button className="btn btn-default" onClick={this.onClickCancel}>
-                            Отмена
-                        </button>
-                    </span>
-                </div>
-                <div hidden={this.state.hiddenMessageError} className="alert alert-warning">Ошибка</div>
-                <div>Заголовок</div>
-                <input ref="title" type="text" defaultValue={this.props.note.Title} />
-                <div>Содержимое</div>
-                <textarea ref="text" defaultValue={this.props.note.Text} style={{ width: "100%", height: "100%" }} />
+                        </Button>
+                    {this.state.isExist &&
+                        <ButtonGroup>
+                            <Button bsStyle="default" onClick={this.onClickDelete}>
+                                Удалить
+                                </Button>
+                            <Button bsStyle="default" onClick={this.onClickCancel}>
+                                Отмена
+                                </Button>
+                        </ButtonGroup>
+                    }
+                </ButtonGroup>
+                <form>
+                    <FormGroup>
+                        <ControlLabel>Заголовок</ControlLabel>
+                        <FormControl type="text" value={this.props.note.Title} onChange={this.onChangeTitle} />
+                    </FormGroup>
+                    <FormGroup>
+                        <ControlLabel>Содержимое</ControlLabel>
+                        <Clearfix />
+                        <FormControl componentClass="textarea" value={this.props.note.Text} onChange={this.onChangeText} style={{ resize: "vertical" }} />
+                    </FormGroup>
+                </form>
             </div>
         );
     }

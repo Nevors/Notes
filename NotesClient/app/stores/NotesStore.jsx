@@ -3,14 +3,11 @@ import $ from "jquery";
 
 import UserStore from "../stores/UsersStore.jsx";
 
-import { NotesActions } from "../Actions.jsx"
+import { NotesActions } from "../Actions.jsx";
 import {
-    URL_API_NOTES_CREATE,
-    URL_API_NOTES_EDIT,
-    URL_API_NOTES_DELETE,
-    URL_API_NOTES_GET,
-    URL_API_NOTES_GET_CHILDREN
-} from "../const.js"
+    URL_API_NOTES_GET_CHILDREN,
+    URL_API_NOTES
+} from "../const.js";
 
 class NotesStore extends Reflux.Store {
     constructor() {
@@ -20,7 +17,7 @@ class NotesStore extends Reflux.Store {
 
     Get(id,completed,failed) {
         $.ajax({
-            url: URL_API_NOTES_GET + "/" + id,
+            url: URL_API_NOTES + "/" + id,
             type: "GET",
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Get.completed(data, textStatus, jqXHR);
@@ -33,7 +30,7 @@ class NotesStore extends Reflux.Store {
         });
     }
 
-    GetChildren(id,completed,failed) {
+    GetChildren(id, completed, failed) {
         $.ajax({
             url: URL_API_NOTES_GET_CHILDREN + "/" + id,
             type: "GET",
@@ -50,7 +47,7 @@ class NotesStore extends Reflux.Store {
 
     Create(data,completed,failed) {
         $.ajax({
-            url: URL_API_NOTES_CREATE,
+            url: URL_API_NOTES,
             type: "POST",
             data: data,
             success: function (data, textStatus, jqXHR) {
@@ -67,8 +64,8 @@ class NotesStore extends Reflux.Store {
     Edit(data,completed,failed) {
         //console.log("NotesStore Edit",data,completed,failed);
         $.ajax({
-            url: URL_API_NOTES_EDIT,
-            type: "POST",
+            url: URL_API_NOTES,
+            type: "PUT",
             data: data,
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Edit.completed(data, textStatus, jqXHR);
@@ -83,8 +80,8 @@ class NotesStore extends Reflux.Store {
 
     Delete(id,completed,failed) {
         $.ajax({
-            url: URL_API_NOTES_DELETE + "/" + id,
-            type: "POST",
+            url: URL_API_NOTES + "/" + id,
+            type: "DELETE",
             success: function (data, textStatus, jqXHR) {
                 NotesActions.Delete.completed(data, textStatus, jqXHR);
                 completed(data, textStatus, jqXHR);

@@ -8,10 +8,14 @@ import NotesStore from "../stores/NotesStore.jsx";
 import { NotesActions } from "../Actions.jsx";
 
 import ManagerNote from "./ManagerNote.jsx";
+import NavBar from "./NavBar.jsx";
 import { STATES } from "./ManagerNote.jsx";
 import Login from "./Login.jsx";
 import NotesTree from "./NotesTree.jsx";
 
+import { Redirect } from 'react-router';
+
+import { Glyphicon, Panel, ButtonToolbar, Grid, Row, Col, Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
 
 export default class App extends Reflux.Component {
     constructor(props) {
@@ -82,6 +86,7 @@ export default class App extends Reflux.Component {
     }
 
     onClickRefresh() {
+        console.log("App onClickRefresh");
         this.lastSelectNote = {};
         this.refs.treeNotes.getTree().refresh();
     }
@@ -95,40 +100,44 @@ export default class App extends Reflux.Component {
     }
 
     render() {
+        var content;
         if (!this.state.isAuth) {
-            return (<Login />);
-        }
-        return (
-            <div className="wrapper container app">
-                <div className="row row-flex">
-                    <div className="col-sm-5 col-xs-12 panel">
-                        <div >
-                            <button className="btn btn-default" onClick={this.onClickRefresh}>
-                                <span className="glyphicon glyphicon-refresh" />
-                            </button>
-                            <button className="btn btn-default" onClick={this.onClickNew}>
-                                Создать
-                            </button>
-                            <button className="btn btn-default" onClick={this.onClickNewRoot}>
-                                Создать в корне
-                            </button>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <NotesTree ref="treeNotes" onChanged={this.onChangedSelectNote} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-7 col-xs-12 panel">
+            content = (<Redirect to="/login" />);
+        } else {
+            content = (
+                <Row className="row-flex">
+                    <Col sm={5} xs={12} className="panel">
+                        <ButtonToolbar>
+                            <ButtonGroup>
+                                <Button>
+                                    <Glyphicon glyph="refresh" onClick={this.onClickRefresh} />
+                                </Button>
+                                <Button onClick={this.onClickNew}>
+                                    Создать
+                                        </Button>
+                                <Button onClick={this.onClickNewRoot}>
+                                    Создать в корне
+                                        </Button>
+                            </ButtonGroup>
+                        </ButtonToolbar>
+                        <NotesTree ref="treeNotes" onChanged={this.onChangedSelectNote} />
+                    </Col>
+                    <Col sm={7} xs={12} className="panel">
                         <ManagerNote
                             note={this.state.note}
                             startState={this.state.startStateManager}
                             onSaveNote={this.onSaveNote}
                             onDeleteNote={this.onDeleteNote}
                         />
-                    </div>
-                </div>
-            </div>
+                    </Col>
+                </Row>
+            );
+        }
+        return (
+            <Grid>
+                {content}
+            </Grid>
         );
+
     }
 }

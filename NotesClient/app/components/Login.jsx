@@ -4,50 +4,54 @@ import Reflux from "reflux";
 import UserStore from "../stores/UsersStore.jsx"
 import { Redirect, Link } from "react-router-dom";
 import { UsersActions } from "../Actions.jsx";
+import { Grid, Row, Col, Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
 
 export default class Login extends Reflux.Component {
     constructor(props) {
         super(props)
-        this.state = { hiddenMessageError: true }
+        this.state = { isError: false }
         this.store = UserStore;
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-        UsersActions.LogIn.failed.listen(this.onLogInFailed.bind(this));
+        this.onClickSubmit = this.onClickSubmit.bind(this);
+        this.onLogInCompleted = this.onLogInCompleted.bind(this);
+        this.onLogInFailed = this.onLogInFailed.bind(this);
     }
     onLogInFailed() {
-        this.setState({ hiddenMessageError: false });
+        console.log("Login onLogInFailed");
+        this.setState({ isError: true });
+    }
+    onLogInCompleted() {
+        console.log("Login onLogInCompleted");
+        this.props.history.push('/');
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
-        UsersActions.LogIn(this.refs.login.value, this.refs.password.value);
+    onClickSubmit() {
+        UsersActions.LogIn(this.refs.login.value, this.refs.password.value, this.onLogInCompleted, this.onLogInFailed);
     }
 
     render() {
         return (
-            <div>
-                <div hidden={this.state.hiddenMessageError} className="alert alert-warning">Логин или пароль неверны</div>
-                <form onSubmit={this.handleSubmit} className="form-horizontal">
-                    <div className="form-group">
-                        <label htmlFor="login" className="col-sm-2 control-label">Email:</label>
-                        <div className="col-sm-10">
-                            <input ref="login" type="text" id="login" />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password" className="col-sm-2 control-label">Пароль:</label>
-                        <div className="col-sm-10">
-                            <input ref="password" type="password" id="password" />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-10">
-                            <input className="btn btn-default" type="submit" value="Вход" />
-                            <Link to="/reg" className="btn btn-default">Регистрация</Link>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <Grid>
+                <Row>
+                    <Col sm={6} smOffset={3} md={4} mdOffset={4} xs={8} xsOffset={2}>
+                        {this.state.isError && <Alert bsStyle="warning">Логин или пароль неверны</Alert>}
+                        <form >
+                            <FormGroup>
+                                <ControlLabel>Email:</ControlLabel>
+                                <input ref="login" className="form-control" type="text" id="login" />
+                            </FormGroup>
+                            <FormGroup>
+                                <ControlLabel>Пароль:</ControlLabel>
+                                <input ref="password" className="form-control" type="password" id="password" />
+                            </FormGroup>
+                            <FormGroup>
+                                <Button bsStyle="primary" bsSize="lg" block onClick={this.onClickSubmit}>Вход</Button>
+                            </FormGroup>
+                        </form>
+                        <Link to="/reg">РЕг</Link>
+                    </Col>
+                </Row>
+            </Grid>
         );
     }
 }

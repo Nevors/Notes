@@ -5,52 +5,64 @@ import UserStore from "../stores/UsersStore.jsx"
 import { Redirect, Link } from "react-router-dom";
 import { UsersActions } from "../Actions.jsx";
 
+import { Grid, Row, Col, Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
+
 export default class Register extends Reflux.Component {
     constructor(props) {
         super(props)
-        this.state = { hiddenMessageError: true }
+        this.state = { isError: false }
         this.store = UserStore;
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-        UsersActions.LogIn.failed.listen(this.onRegisterFailed.bind(this));
+        this.onClickSubmit = this.onClickSubmit.bind(this);
+        UsersActions.Register.failed.listen(this.onRegisterFailed.bind(this));
+        UsersActions.Register.completed.listen(this.onRegisterCompleted.bind(this));
     }
     onRegisterFailed() {
-        this.setState({ hiddenMessageError: false });
+        this.setState({ isError: true, error: "Ошибка регистрации" });
+    }
+    onRegisterCompleted() {
+        this.props.history.push('/');
     }
 
-    handleSubmit(e) {
-        e.preventDefault();
-        UsersActions.Register(this.refs.login.value, this.refs.password.value);
+    onClickSubmit(e) {
+        console.log("Register onClickSubmit", e);
+
+        if (this.refs.password.value != this.refs.confirmPassword.value) {
+            this.setState({ isError: true, error: "Пароли не совпадают" });
+        } else {
+            UsersActions.Register(this.refs.login.value, this.refs.password.value);
+        }
     }
 
     render() {
-        if(this.state.isAuth){
-            return(<Redirect to="/"/>);
+        if (this.state.isAuth) {
+            return (<Redirect to="/" />);
         }
         return (
-            <div>
-                <div hidden={this.state.hiddenMessageError} className="alert alert-warning">Ошибка регистрации</div>
-                <form onSubmit={this.handleSubmit} className="form-horizontal">
-                    <div className="form-group">
-                        <label htmlFor="login" className="col-sm-2 control-label">Email:</label>
-                        <div className="col-sm-10">
-                            <input ref="login" type="text" id="login" />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password" className="col-sm-2 control-label">Пароль:</label>
-                        <div className="col-sm-10">
-                            <input ref="password" type="password" id="password" />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-10">
-                            <input className="btn btn-default" type="submit" value="Регистрация" />
-                            <Link to="/" className="btn btn-default">Авторизация</Link>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <Grid>
+                <Row>
+                    <Col sm={6} smOffset={3} md={4} mdOffset={4} xs={8} xsOffset={2}>
+                        {this.state.isError && <Alert bsStyle="warning">{this.state.error}</Alert>}
+                        <form onSubmit={this.onClickSubmit}>
+                            <FormGroup>
+                                <ControlLabel>Email:</ControlLabel>
+                                <input ref="login" className="form-control" type="text" />
+                            </FormGroup>
+                            <FormGroup>
+                                <ControlLabel>Пароль:</ControlLabel>
+                                <input ref="password" className="form-control" type="password" />
+                            </FormGroup>
+                            <FormGroup>
+                                <ControlLabel>Повторите пароль:</ControlLabel>
+                                <input ref="confirmPassword" className="form-control" type="password" />
+                            </FormGroup>
+                            <FormGroup>
+                                <Button bsStyle="primary" bsSize="lg" block onClick={this.onClickSubmit}>Реситрация</Button>
+                            </FormGroup>
+                        </form>
+                    </Col>
+                </Row>
+            </Grid>
         );
     }
 }

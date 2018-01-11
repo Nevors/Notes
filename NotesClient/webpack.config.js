@@ -10,7 +10,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.jsx?$/, 
+                test: /\.jsx?$/,
                 exclude: /(node_modules)/,  // исключаем из обработки папку node_modules
                 loader: "babel-loader",   // определяем загрузчик
                 options: {
@@ -26,5 +26,8 @@ module.exports = {
                 loader: 'file-loader'
             }
         ]
+    },
+    devServer: {
+        historyApiFallback: true,
     }
 };
