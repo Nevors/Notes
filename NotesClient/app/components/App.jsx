@@ -31,7 +31,6 @@ export default class App extends Reflux.Component {
         this.state = {
             note: null,
             startStateManager: null,
-            isShowToggle: this.isShowToggle(),
             isOpen: true
         };
 
@@ -43,26 +42,9 @@ export default class App extends Reflux.Component {
         this.onClickRefresh = this.onClickRefresh.bind(this);
         this.onClickNewRoot = this.onClickNewRoot.bind(this);
         this.onClickToggle = this.onClickToggle.bind(this);
-        this.handleResizeWindow = this.handleResizeWindow.bind(this);
         this.onChangedSelectNote = this.onChangedSelectNote.bind(this);
 
         this.lastSelectNote = {};
-
-        window.addEventListener("resize", this.handleResizeWindow);
-    }
-    isShowToggle() {
-        return window.innerWidth < LIMIT_COLLAPSE;
-    }
-
-    handleResizeWindow(e) {
-        //console.log("App handleResizeWindow", e.target.innerWidth);
-        if (this.state.isShowToggle && e.target.innerWidth >= LIMIT_COLLAPSE) {
-            this.setState({ isShowToggle: false, isOpen: true });
-        } else {
-            if (!this.state.isShowToggle && e.target.innerWidth < LIMIT_COLLAPSE) {
-                this.setState({ isShowToggle: true });
-            }
-        }
     }
 
     onChangedSelectNote(data) {
@@ -140,13 +122,13 @@ export default class App extends Reflux.Component {
             content = (
                 <Row className="row-flex">
                     <Col sm={5} xs={12} className="panel">
-                        {this.state.isShowToggle &&
+                        <div className="visible-xs-block">
                             <Button block onClick={this.onClickToggle}>
                                 <span className="caret"></span>
                                 &nbsp;Заметки&nbsp;
                                 <span className="caret"></span>
                             </Button>
-                        }
+                        </div>
                         <Collapse isOpen={this.state.isOpen}>
                             <ButtonToolbar>
                                 <ButtonGroup>

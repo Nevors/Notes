@@ -39,7 +39,7 @@ class NotesStore extends Reflux.Store {
                 completed(data, textStatus, jqXHR);
             }.bind(this),
             error: function (jqXHR, textStatus, errorThrown) {
-                NotesActions.GetChildren.failed(zjqXHR, textStatus, errorThrown);
+                NotesActions.GetChildren.failed(jqXHR, textStatus, errorThrown);
                 failed(jqXHR, textStatus, errorThrown);
             }.bind(this)
         });
