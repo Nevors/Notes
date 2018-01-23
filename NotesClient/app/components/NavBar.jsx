@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Reflux from 'reflux';
 import { Navbar, NavItem, Nav, NavDropdown, MenuItem } from "react-bootstrap";
 import UserStore from "../stores/UsersStore.jsx"
+import { UsersActions } from "../Actions.jsx"
 
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
@@ -11,10 +12,25 @@ export default class NavBar extends Reflux.Component {
     constructor(props) {
         super(props)
         this.store = UserStore;
+        this.onSelect = this.onSelect.bind(this);
     }
+
+    onSelect(eventKey, event) {
+        switch (eventKey) {
+            case 3.1:
+                break;
+            case 3.2:
+                break;
+            case 3.3:
+            console.log("NavBar onSelect",eventKey);
+                UsersActions.LogOut();
+                break;
+        }
+    }
+
     render() {
         return (
-            <Navbar fluid collapseOnSelect>
+            <Navbar fluid collapseOnSelect onSelect={this.onSelect}>
                 <Navbar.Header>
                     <Navbar.Brand>
                         <Link to="/">Главная</Link>
@@ -22,28 +38,27 @@ export default class NavBar extends Reflux.Component {
                     <Navbar.Toggle />
                 </Navbar.Header>
                 <Navbar.Collapse>
-                    <Nav>
-                        {this.state.isAuth ?
-                            <LinkContainer>
-                                <NavItem>Выход</NavItem>
+                    <Nav pullRight>
+                        {!this.state.isAuth &&
+                            <LinkContainer to="/login">
+                                <NavItem>Вход</NavItem>
                             </LinkContainer>
-                            :
-                            <Nav>
-                                <LinkContainer to="/login">
-                                    <NavItem>Вход</NavItem>
-                                </LinkContainer>
-                                <LinkContainer to="/reg">
-                                    <NavItem>Регистрация</NavItem>
-                                </LinkContainer>
-                            </Nav>
                         }
-                        <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown" >
-                            <MenuItem eventKey={3.1}>Action</MenuItem>
-                            <MenuItem eventKey={3.2}>Another action</MenuItem>
-                            <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem eventKey={3.4}>Separated link</MenuItem>
-                        </NavDropdown>
+                        {!this.state.isAuth &&
+                            <LinkContainer to="/reg">
+                                <NavItem>Регистрация</NavItem>
+                            </LinkContainer>
+                        }
+                        {this.state.isAuth &&
+                            <NavDropdown eventKey={3} title={this.state.login} id="nav-dropdown">
+                                <MenuItem eventKey={3.1}>Профиль</MenuItem>
+                                <LinkContainer to="/images">
+                                    <MenuItem eventKey={3.2}>Галерея</MenuItem>
+                                </LinkContainer>
+                                <MenuItem divider />
+                                <MenuItem eventKey={3.3}>Выход</MenuItem>
+                            </NavDropdown>
+                        }
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

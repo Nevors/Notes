@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { markdown } from 'markdown';
-
+import  marked from 'marked';
 import { Grid } from 'react-bootstrap';
 export default class NoteInfo extends React.Component {
     constructor(props) {
@@ -13,14 +12,14 @@ export default class NoteInfo extends React.Component {
         }
         var text = this.props.note.Text;
         var html = "Заметка пустая";
-        if(text){
-            html = markdown.toHTML(text);
+        if (text) {
+            html = marked(text);
         }
-        
+
         return (
-            <Grid fluid={true}>
+            <Grid>
                 <h1>{this.props.note.Title}</h1>
-                <div dangerouslySetInnerHTML={{__html: html}} ></div>
+                <div dangerouslySetInnerHTML={{ __html: html }} ></div>
             </Grid>
         );
     }

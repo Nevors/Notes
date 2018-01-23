@@ -1,6 +1,5 @@
 import 'jstree/dist/themes/default/style.min.css';
-import 'jstree/dist/themes/default-dark/style.min.css';
-
+//import './style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';

@@ -28,9 +28,10 @@ export var NotesActions = Reflux.createActions(
 
 export var ImagesActions = Reflux.createActions(
     [
-        CreateAction("Get"), 
+        CreateAction("Get"), //?
         CreateAction("Delete"), 
-        CreateAction("Create")
+        CreateAction("Create"),
+        CreateAction("GetList")
     ]
 );
 

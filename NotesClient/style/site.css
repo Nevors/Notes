@@ -5,3 +5,6 @@
 .max-height{
     height: 100%;
 }
+.inline-block{
+    display: inline-block;
+}

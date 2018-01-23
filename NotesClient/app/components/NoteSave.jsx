@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { NotesActions } from "../Actions.jsx";
 import { Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
 
+import ModalListImages from "components/ModalListImages";
 export default class NoteSave extends React.Component {
     constructor(props) {
         super(props)
@@ -12,12 +13,18 @@ export default class NoteSave extends React.Component {
         this.onClickCancel = this.onClickCancel.bind(this);
         this.onChangeTitle = this.onChangeTitle.bind(this);
         this.onChangeText = this.onChangeText.bind(this);
+        this.onHideModal = this.onHideModal.bind(this);
+        this.onClickShowGallery = this.onClickShowGallery.bind(this);
 
         this.onSave = this.onSave.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onFailed = this.onFailed.bind(this);
 
-        this.state = { isError: false, isExist: this.isExist(props.note) }
+        this.state = {
+            isError: false,
+            isExist: this.isExist(props.note),
+            show: false
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,6 +53,13 @@ export default class NoteSave extends React.Component {
         if (this.props.onCancel) {
             this.props.onCancel();
         }
+    }
+    onClickShowGallery() {
+        this.setState({ show: true });
+    }
+
+    onHideModal(){
+        this.state.show = false;
     }
 
     onSave(note) {
@@ -77,6 +91,7 @@ export default class NoteSave extends React.Component {
         this.forceUpdate();
     }
 
+
     render() {
         console.log("Notesave render", this);
         if (!this.props.note) {
@@ -84,6 +99,7 @@ export default class NoteSave extends React.Component {
         }
         return (
             <div>
+                <ModalListImages show={this.state.show} onHideModal={this.onHideModal}/>
                 {this.state.isError && <Alert bsStyle="warning">Ошибка</Alert>}
                 <ButtonGroup>
                     <Button bsStyle="default" onClick={this.onClickSave}>
@@ -93,10 +109,10 @@ export default class NoteSave extends React.Component {
                         <ButtonGroup>
                             <Button bsStyle="default" onClick={this.onClickDelete}>
                                 Удалить
-                                </Button>
+                            </Button>
                             <Button bsStyle="default" onClick={this.onClickCancel}>
                                 Отмена
-                                </Button>
+                            </Button>
                         </ButtonGroup>
                     }
                 </ButtonGroup>
@@ -109,6 +125,11 @@ export default class NoteSave extends React.Component {
                         <ControlLabel>Содержимое</ControlLabel>
                         <Clearfix />
                         <FormControl componentClass="textarea" value={this.props.note.Text} onChange={this.onChangeText} style={{ resize: "vertical" }} />
+                        {this.state.isExist &&
+                            <Button bsStyle="default" onClick={this.onClickShowGallery}>
+                                Открыть галерею
+                            </Button>
+                        }
                     </FormGroup>
                 </form>
             </div>

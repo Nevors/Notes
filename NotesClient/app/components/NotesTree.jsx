@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import Reflux from "reflux";
 //import NotesStore from "../stores/NotesStore.jsx"
 import $ from 'jquery';
-import { NotesActions } from "../Actions.jsx";
-import ReactTree from "./ReactTree.jsx";
+import { NotesActions } from "Actions.jsx";
+import ReactTree from "components/ReactTree";
 
 export default class NotesTree extends Reflux.Component {
     constructor(props) {
@@ -32,6 +32,9 @@ export default class NotesTree extends Reflux.Component {
                 if (operation === "rename_node") return true;
                 if (operation === "create_node") return true;
                 return false;
+            },
+            themes:{
+                variant: "large"
             }
         };
 

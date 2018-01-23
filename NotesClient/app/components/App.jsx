@@ -13,16 +13,27 @@ import { STATES } from "./ManagerNote.jsx";
 import Login from "./Login.jsx";
 import NotesTree from "./NotesTree.jsx";
 
+import ImageGalerry from './ImageGallery.jsx'
+
+import Collapse from 'react-css-collapse';
+
 import { Redirect } from 'react-router';
 
-import { Glyphicon, Panel, ButtonToolbar, Grid, Row, Col, Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
+import { DropdownButton, Glyphicon, Panel, ButtonToolbar, Grid, Row, Col, Button, ButtonGroup, Alert, FormGroup, Clearfix, ControlLabel, FormControl } from "react-bootstrap";
+
+import { LIMIT_COLLAPSE } from 'const.js';
 
 export default class App extends Reflux.Component {
     constructor(props) {
         super(props);
         this.stores = [UserStore];
 
-        this.state = { note: null, startStateManager: null };
+        this.state = {
+            note: null,
+            startStateManager: null,
+            isShowToggle: this.isShowToggle(),
+            isOpen: true
+        };
 
         this.newNote = this.newNote.bind(this);
         this.onGetNote = this.onGetNote.bind(this);
@@ -31,9 +42,27 @@ export default class App extends Reflux.Component {
         this.onSaveNote = this.onSaveNote.bind(this);
         this.onClickRefresh = this.onClickRefresh.bind(this);
         this.onClickNewRoot = this.onClickNewRoot.bind(this);
+        this.onClickToggle = this.onClickToggle.bind(this);
+        this.handleResizeWindow = this.handleResizeWindow.bind(this);
         this.onChangedSelectNote = this.onChangedSelectNote.bind(this);
 
         this.lastSelectNote = {};
+
+        window.addEventListener("resize", this.handleResizeWindow);
+    }
+    isShowToggle() {
+        return window.innerWidth < LIMIT_COLLAPSE;
+    }
+
+    handleResizeWindow(e) {
+        //console.log("App handleResizeWindow", e.target.innerWidth);
+        if (this.state.isShowToggle && e.target.innerWidth >= LIMIT_COLLAPSE) {
+            this.setState({ isShowToggle: false, isOpen: true });
+        } else {
+            if (!this.state.isShowToggle && e.target.innerWidth < LIMIT_COLLAPSE) {
+                this.setState({ isShowToggle: true });
+            }
+        }
     }
 
     onChangedSelectNote(data) {
@@ -91,6 +120,10 @@ export default class App extends Reflux.Component {
         this.refs.treeNotes.getTree().refresh();
     }
 
+    onClickToggle() {
+        this.setState({ isOpen: !this.state.isOpen });
+    }
+
     onClickNewRoot() {
         this.newNote();
     }
@@ -107,20 +140,29 @@ export default class App extends Reflux.Component {
             content = (
                 <Row className="row-flex">
                     <Col sm={5} xs={12} className="panel">
-                        <ButtonToolbar>
-                            <ButtonGroup>
-                                <Button>
-                                    <Glyphicon glyph="refresh" onClick={this.onClickRefresh} />
-                                </Button>
-                                <Button onClick={this.onClickNew}>
-                                    Создать
-                                        </Button>
-                                <Button onClick={this.onClickNewRoot}>
-                                    Создать в корне
-                                        </Button>
-                            </ButtonGroup>
-                        </ButtonToolbar>
-                        <NotesTree ref="treeNotes" onChanged={this.onChangedSelectNote} />
+                        {this.state.isShowToggle &&
+                            <Button block onClick={this.onClickToggle}>
+                                <span className="caret"></span>
+                                &nbsp;Заметки&nbsp;
+                                <span className="caret"></span>
+                            </Button>
+                        }
+                        <Collapse isOpen={this.state.isOpen}>
+                            <ButtonToolbar>
+                                <ButtonGroup>
+                                    <Button>
+                                        <Glyphicon glyph="refresh" onClick={this.onClickRefresh} />
+                                    </Button>
+                                    <Button onClick={this.onClickNew}>
+                                        Создать
+                                    </Button>
+                                    <Button onClick={this.onClickNewRoot}>
+                                        Создать в корне
+                                    </Button>
+                                </ButtonGroup>
+                            </ButtonToolbar>
+                            <NotesTree ref="treeNotes" onChanged={this.onChangedSelectNote} />
+                        </Collapse>
                     </Col>
                     <Col sm={7} xs={12} className="panel">
                         <ManagerNote
@@ -138,6 +180,5 @@ export default class App extends Reflux.Component {
                 {content}
             </Grid>
         );
-
     }
 }

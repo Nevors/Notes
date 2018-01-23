@@ -30,6 +30,9 @@ export default class Login extends Reflux.Component {
     }
 
     render() {
+        if (this.state.isAuth) {
+            return (<Redirect to="/" />);
+        }
         return (
             <Grid>
                 <Row>
@@ -41,14 +44,13 @@ export default class Login extends Reflux.Component {
                                 <input ref="login" className="form-control" type="text" id="login" />
                             </FormGroup>
                             <FormGroup>
-                                <ControlLabel>Пароль:</ControlLabel>
+                                <ControlLabel htmlFor="password">Пароль:</ControlLabel>
                                 <input ref="password" className="form-control" type="password" id="password" />
                             </FormGroup>
                             <FormGroup>
                                 <Button bsStyle="primary" bsSize="lg" block onClick={this.onClickSubmit}>Вход</Button>
                             </FormGroup>
                         </form>
-                        <Link to="/reg">РЕг</Link>
                     </Col>
                 </Row>
             </Grid>

@@ -8,24 +8,44 @@ module.exports = {
         filename: "bundle.js"       // название создаваемого файла
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
                 exclude: /(node_modules)/,  // исключаем из обработки папку node_modules
-                loader: "babel-loader",   // определяем загрузчик
-                options: {
-                    presets: ["env", "react"]    // используемые плагины
+                use: {
+                    loader: "babel-loader",   // определяем загрузчик
+                    options: {
+                        presets: ["env", "react"]    // используемые плагины
+                    }
                 }
             },
             {
                 test: /\.css$/,
-                loader: 'style-loader!css-loader'
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
+            {
+                test: /\.less$/,
+                use: [{
+                    loader: "style-loader" // creates style nodes from JS strings
+                }, {
+                    loader: "css-loader" // translates CSS into CommonJS
+                }, {
+                    loader: "less-loader"
+                }]
             },
             {
                 test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
                 loader: 'file-loader'
             }
         ]
+    },
+    resolve: {
+        modules: ['node_modules', 'app'],
+        extensions: ['.js', '.jsx'],
+        mainFiles: ["index"]
     },
     devServer: {
         historyApiFallback: true,

@@ -1,7 +1,9 @@
 import Reflux from "reflux";
 import $ from "jquery";
-import { UsersActions } from "../Actions.jsx"
-import { URL_GET_TOKEN, URL_API_REGISTER } from "../const.js"
+import { UsersActions } from "../Actions.jsx";
+import { URL_GET_TOKEN, URL_API_REGISTER } from "../const.js";
+
+const KeyLocalStorage = "UsersStore";
 
 class UsersStore extends Reflux.Store {
     constructor() {
@@ -21,13 +23,13 @@ class UsersStore extends Reflux.Store {
             success: function (data, textStatus, jqXHR) {
                 this.token = data.token_type + " ";
                 this.token += data.access_token;
+                this.addHeaderAuthorization(this.token);
 
-                $.ajaxSetup({
-                    headers: {
-                        "Authorization": this.token
-                    },
-                });
                 this.setState({ isAuth: true, login: login });
+
+                var saveObj = { state: this.state, token: this.token };
+                localStorage.setItem(KeyLocalStorage, JSON.stringify(saveObj));
+
                 UsersActions.LogIn.completed(/*data, textStatus, jqXHR*/);
                 completed();
             }.bind(this),
@@ -39,11 +41,12 @@ class UsersStore extends Reflux.Store {
     }
 
     onLogOut() {
-        $.ajaxSetup({
-            headers: {},
-        });
+        this.removeAllHeaders();
 
         this.setState({ isAuth: false, login: "" });
+
+        localStorage.removeItem(KeyLocalStorage);
+
         this.token = "";
         UsersActions.LogOut.completed();
     }
@@ -68,6 +71,33 @@ class UsersStore extends Reflux.Store {
             }.bind(this)
         });
     }
+
+    addHeaderAuthorization(token) {
+        $.ajaxSetup({
+            headers: {
+                "Authorization": token
+            },
+        });
+    }
+    removeAllHeaders() {
+        $.ajaxSetup({
+            headers: {},
+        });
+    }
+
+}
+var store = Reflux.initStore(UsersStore);
+//console.log("UsersStore");
+var obj;
+try {
+    obj = JSON.parse(localStorage.getItem(KeyLocalStorage));
+} catch (e) {
+    console.log("UsersStore exeption");
+}
+if (obj) {
+    store.token = obj.token;
+    store.addHeaderAuthorization(store.token);
+    store.setState(obj.state);
 }
 
-export default Reflux.initStore(UsersStore);
+export default store;

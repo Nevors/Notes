@@ -1,0 +1,29 @@
+:local .inputUrl {
+    width: 50%;
+    border-radius: 0px;
+    position: relative ;
+    top: 1px;
+}
+
+:local .btnDelete {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+:local .btnCopy {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+
+:local .panel {
+    text-align: center;
+    padding: 4px 0px 0px 0px;
+}
+
+:local .panel * {
+    display: inline-block;
+}
+
+:local .image {
+    height: 200px !important;
+}

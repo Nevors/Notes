@@ -12,6 +12,8 @@ import App from "./components/App.jsx";
 import Login from "./components/Login.jsx";
 import NavBar from "./components/NavBar.jsx";
 import Register from "./components/Register.jsx";
+import ImageGallery from "./components/ImageGallery.jsx";
+import ModalListImages from "./components/ModalListImages";
 
 import { Grid } from "react-bootstrap";
 
@@ -24,6 +26,8 @@ ReactDOM.render(
                 <Route exact path="/" component={App} />
                 <Route path="/login" component={Login} />
                 <Route path="/reg" component={Register} />
+                <Route path="/images" component={ImageGallery} />
+                <Route path="/modal" component={ModalListImages} />
                 <Route component={App} />
             </Switch>
         </Grid>
