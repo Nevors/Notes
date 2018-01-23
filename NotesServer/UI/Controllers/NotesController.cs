@@ -36,7 +36,6 @@ namespace UI.Controllers {
             return Json(list);
         }
 
-        [Route("Item/{id}", Name = "GetNote")]
         public IHttpActionResult GetItem(int? id) {
             string userId = User.Identity.GetUserId();
             var note = db.Notes.Find(id);
@@ -46,8 +45,7 @@ namespace UI.Controllers {
             return NotFound();
         }
 
-        [Route("Edit")]
-        public IHttpActionResult PostEdit([FromBody]Note note) {
+        public IHttpActionResult PutEdit([FromBody]Note note) {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
             }
@@ -74,7 +72,6 @@ namespace UI.Controllers {
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        [Route("Create")]
         public IHttpActionResult PostCreate([FromBody]Note note) {
             if (!ModelState.IsValid) {
                 return BadRequest(ModelState);
@@ -84,11 +81,10 @@ namespace UI.Controllers {
 
             Note res = db.Notes.Add(note);
             db.SaveChanges();
-            return CreatedAtRoute("GetNote", new { id = res.Id }, GetFormatNote(res));
+            return Json(GetFormatNote(res));
         }
 
-        [Route("Delete/{id}")]
-        public IHttpActionResult PostDelete(int id) {
+        public IHttpActionResult Delete(int id) {
             string userId = User.Identity.GetUserId();
             var note = db.Notes.FirstOrDefault(n => n.Id == id && n.CreatorId.Equals(userId));
             if (note == null) {
